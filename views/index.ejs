@@ -1,26 +1,41 @@
 <%- include ('./partials/header') %>
 <%- include ('./partials/navbar') %>
-<body>
+<body>    
     <div class="container">
         <div class="row">
             <div class="col-12">
+                <hr>
                 <h3>List of games</h3>
-    <ul id ="games"></ul>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Year</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Remove</th>
+                            <th scope="col">Update</th>
+                        </tr>
+                    </thead>
+                    <tbody id="games">
+                        
+                    </tbody>
+                </table>
+    
     <hr>
     <h3>New Game</h3>
     <input type="text" name="title" id="title" placeholder="Title">
     <input type="number" name="year" id="year" placeholder="Year">
     <input type="number" name="price" id="price" placeholder="Price">
-    <button type="button" onclick="createGame()">Save</button>
+    <button type="button" onclick="createGame()" class="btn btn-primary">Save</button>
 
     <hr>
-
     <h3>Edit Game</h3>
     <input type="text" name="idEdit" id="idEdit" placeholder="id" readonly="True">
     <input type="text" name="titleEdit" id="titleEdit" placeholder="Title">
     <input type="number" name="yearEdit" id="yearEdit" placeholder="Year">
     <input type="number" name="priceEdit" id="priceEdit" placeholder="Price">
-    <button type="button" onclick="updateGame()">Update</button>
+    <button type="button" onclick="updateGame()" class="btn btn-primary">Update</button>
             </div>
         </div>
     </div>
@@ -48,7 +63,7 @@
 
         axios.post('http://localhost:45678/game', game).then(response => {
             if (response.status == 200){
-                alert('Game saved');
+                window.location.reload();
             }
         }).catch(err => {
             console.log(err);
@@ -59,7 +74,7 @@
         var id = listItem.getAttribute('data-id');
         axios.delete('http://localhost:45678/game/' + id).then(response => {
             console.log(response);
-            alert('Game removed');
+            window.location.reload();
         }).catch(err => {
             console.log(err);
         });
@@ -93,7 +108,8 @@
 
         axios.put('http://localhost:45678/game/' + id, game).then(response => {
             if (response.status == 200){
-                alert('Game updated');
+                console.log('updated');
+                window.location.reload();
             }
         }).catch(err => {
             console.log(err);
@@ -103,32 +119,77 @@
 
     axios.get('http://localhost:45678/games').then(response => {
         var games = response.data;
-        var list = document.getElementById('games');
+        var rowlist = document.getElementById('games');
 
         games.forEach(game => {
-            var item = document.createElement('li');
-            item.setAttribute('data-id', game.id);
-            item.setAttribute('data-title', game.title);
-            item.setAttribute('data-price', game.price);
-            item.setAttribute('data-year', game.year);
-            item.innerHTML  = game.id + ' - ' + game.title + ' - ' + game.year + ' - R$' + game.price;
+            var newrow = document.createElement('tr');
+            var itemId = document.createElement('td');
+            var itemTitle = document.createElement('td');
+            var itemYear = document.createElement('td');
+            var itemPrice = document.createElement('td');
+            var itemRemove = document.createElement('td');
+            var itemUpdate = document.createElement('td');
+
+            itemId.setAttribute('data-id', game.id);
+            itemId.setAttribute('data-title', game.title);
+            itemId.setAttribute('data-year', game.year);
+            itemId.setAttribute('data-price', game.price);
+
+            itemTitle.setAttribute('data-id', game.id);
+            itemTitle.setAttribute('data-title', game.title);
+            itemTitle.setAttribute('data-year', game.year);
+            itemTitle.setAttribute('data-price', game.price);
+
+            itemPrice.setAttribute('data-id', game.id);
+            itemPrice.setAttribute('data-title', game.title);
+            itemPrice.setAttribute('data-year', game.year);
+            itemPrice.setAttribute('data-price', game.price);
+
+            itemYear.setAttribute('data-id', game.id);
+            itemYear.setAttribute('data-title', game.title);
+            itemYear.setAttribute('data-year', game.year);
+            itemYear.setAttribute('data-price', game.price);
+
+            itemRemove.setAttribute('data-id', game.id);
+            itemRemove.setAttribute('data-title', game.title);
+            itemRemove.setAttribute('data-year', game.year);
+            itemRemove.setAttribute('data-price', game.price);
+
+            itemUpdate.setAttribute('data-id', game.id);
+            itemUpdate.setAttribute('data-title', game.title);
+            itemUpdate.setAttribute('data-year', game.year);
+            itemUpdate.setAttribute('data-price', game.price);
+            
+            itemId.innerHTML = game.id;
+            itemTitle.innerHTML = game.title;
+            itemYear.innerHTML = game.year;
+            itemPrice.innerHTML = game.price;
 
             var deleteBtn = document.createElement('button');
             deleteBtn.innerHTML = 'Remove';
             deleteBtn.addEventListener('click', function (){
-                deleteGame(item);
+                deleteGame(itemRemove);
             });
 
             var editBtn = document.createElement('button');
             editBtn.innerHTML = 'Update';
             editBtn.addEventListener('click', function (){
-                loadForm(item);
+                loadForm(itemUpdate);
             });
 
+            deleteBtn.setAttribute('class', 'btn btn-danger');
+            editBtn.setAttribute('class', 'btn btn-warning');
 
-            item.appendChild(deleteBtn);
-            item.appendChild(editBtn);
-            list.appendChild(item);
+            itemRemove.appendChild(deleteBtn);
+            itemUpdate.appendChild(editBtn);
+
+            newrow.appendChild(itemId);
+            newrow.appendChild(itemTitle);
+            newrow.appendChild(itemYear);
+            newrow.appendChild(itemPrice);
+            newrow.appendChild(itemRemove);
+            newrow.appendChild(itemUpdate);
+            rowlist.appendChild(newrow);
         });
     }).catch(err => {
         console.log(err);
